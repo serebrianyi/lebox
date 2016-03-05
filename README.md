@@ -15,7 +15,4 @@ leboX is a centralised exchange for SLB which can be accessed by any bank worldw
 Competitive advantages:
 * 1. leboX is the first exchange for SLB worldwide.
 * 2. Competitive prices / fees
-* 3. Private trader (average person) is more encourage to trade securities.
-
-# Disclaimer
-The UI is shamlessly stolen from https://github.com/720kb/hubuntu-ui
+* 3. Private trader (average person) is more encourage to trade securities

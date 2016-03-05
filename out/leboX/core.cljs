@@ -14,7 +14,7 @@
 (defn openProposalDialog []
   (jquery
      (fn []
-       (-> (println (. (jquery ".modal") openModal))))))
+       (-> (. (jquery ".modal") openModal)))))
 
 ; Clojure helpers
 (defn indices-of [f coll]
@@ -74,12 +74,10 @@
 
 (defn select-a-stock! [stock-symbol]
   (swap! app-state update-in [:order] {})
-  (swap! app-state assoc-in [:order :stock] stock-symbol)
-  (println @app-state))
+  (swap! app-state assoc-in [:order :stock] stock-symbol))
 
 (defn select-a-duration! [duration]
-  (swap! app-state assoc-in [:order :duration] duration)
-  (println @app-state))
+  (swap! app-state assoc-in [:order :duration] duration))
 
 
 (defn portfolio-entry-revealed [data owner]
@@ -87,16 +85,16 @@
     om/IRenderState
       (render-state [this state]
         (let [{:keys [stock is-selected]} data]
-          (dom/div #js {:className "card-reveal stock-reveal" }
-            (dom/span  #js {:className "card-title grey-text text-darken-4 stock-icon-small-holder"}
-              (dom/img #js {:className "stock-icon-small" :src (str "img/" (:symbol stock) ".png")})
+          (dom/div #js { :className "card-reveal stock-reveal" }
+            (dom/span  #js { :className "card-title grey-text text-darken-4 stock-icon-small-holder"}
+              (dom/img #js { :className "stock-icon-small" :src (str "img/" (:symbol stock) ".png")})
               (dom/i #js {:className "material-icons right" }"close"))
             (dom/div nil (str "since yesterday ")
-              (dom/span #js {:className (if (> 0 (js/parseFloat (:from-yesterday stock))) "red-text" "green-text")}(:from-yesterday stock)))
+              (dom/span #js {:className (if (> 0 (js/parseFloat (:from-yesterday stock))) "red-text stock-reveal-percentage" "green-text stock-reveal-percentage")}(:from-yesterday stock)))
             (dom/div nil (str "from year high ")
-              (dom/span #js {:className (if (> 0 (js/parseFloat (:from-high stock))) "red-text" "green-text")}(:from-high stock)))
+              (dom/span #js {:className (if (> 0 (js/parseFloat (:from-high stock))) "red-text stock-reveal-percentage" "green-text stock-reveal-percentage")}(:from-high stock)))
             (dom/div nil (str "from year low ")
-              (dom/span #js {:className (if (> 0 (js/parseFloat (:from-low stock))) "red-text" "green-text")}(:from-low stock))))))))
+              (dom/span #js {:className (if (> 0 (js/parseFloat (:from-low stock))) "red-text stock-reveal-percentage" "green-text stock-reveal-percentage")}(:from-low stock))))))))
 
 (defn portfolio-entry [data owner]
   (reify
@@ -109,11 +107,12 @@
     om/IRenderState
       (render-state [this state]
         (let [{:keys [stock is-selected]} data]
-          (dom/div #js {:className (if is-selected "col s12 m6 l3 selected-stock" "col s12 m6 l3") :onClick #(select-a-stock! (:symbol stock))}
+          (when-not (:is-lent stock)
+            (dom/div #js {:className (if is-selected "col s12 m6 l3 selected-stock" "col s12 m6 l3") :onClick #(select-a-stock! (:symbol stock))}
               (dom/div #js {:className "card"}
                 (dom/div #js {:className "card-image waves-effect waves-block waves-light"}
                   (dom/img #js {:className "activator" :src="images/office.jpg"}))
-                (dom/div #js {:className "card-content black-text"}
+                (dom/div #js {:className "card-content black-text" }
                   (dom/span #js {:className "card-title activator grey-text text-darken-4"}
                     (dom/i #js {:className "material-icons right"} "more_vert"))
                   (dom/p nil (dom/i #js {:className "mdi-action-wallet-membership"}
@@ -124,7 +123,7 @@
                   (dom/p #js {:className "card-stats-compare"}
                     (dom/i #js {:className "mdi-hardware-keyboard-arrow-up"}) "Price: "
                          (dom/span #js {:className "deep-orange-text text-lighten-2"} (str " " (:quote stock) " $"))))
-                (om/build portfolio-entry-revealed data)))))))
+                (om/build portfolio-entry-revealed data))))))))
 
 (defn lend-a-stock! [stock-symbol]
   (.toast js/Materialize (str "Transaction successfully commited") 6000)
@@ -145,7 +144,7 @@
               (dom/h4 nil (str "Proposal for " (:stock order)))
               (dom/p nil (str "Capital gain: " (.toFixed capital-gain 2)))
               (dom/p nil (str "Return data: " return-date))
-              (dom/p nil (str "Interest rate: " (.toFixed annualized-interest-rate 2) "% p.a)")))
+              (dom/p nil (str "Interest rate: " (.toFixed annualized-interest-rate 2) "% p.a.")))
             (dom/div #js {:className "modal-footer"}
               (dom/a #js {:href "#!" :className "modal-action modal-close waves-effect waves-green btn-flat"
                           :onClick #(lend-a-stock! (:stock order))} "Agree")
@@ -160,7 +159,7 @@
       (dom/div nil
         (om/build proposal-dialog data)
         (dom/div #js {:className "row"}
-          (om/build-all portfolio-entry (map #(get-portfolio-entry-data % (= (:stock (:order data)) (:symbol %))) (filter #(not (:is-lent %)) (:stocks data)))))
+          (om/build-all portfolio-entry (map #(get-portfolio-entry-data % (= (:stock (:order data)) (:symbol %))) (:stocks data))))
         (dom/form  #js {:action "#" :className (if (:stock (:order data)) "visible" "invisible")}
           (dom/p nil
             (dom/input #js {:name "duration" :type "radio" :id "less-than-a-month" :checked (= (:duration (:order data)) :less-than-a-month)})
