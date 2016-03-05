@@ -1,6 +1,6 @@
-# lebox
+# leboX
 
-leboX is a new way to enhance the performance of you portfolio with your dormant shares. What does it mean? The keyword is "Securities Lending and Borrowing" (SLB).
+leboX is a new way to enhance the performance of your portfolio with your dormant shares. What does it mean? The keyword is "Securities Lending and Borrowing" (SLB).
 
 These days SLB is a business for institutional clients only. There is no centralised exchange for SLB. That means it is a "over the counter" business only. An average person has no chance to pull the benefits from this service.
 
@@ -16,3 +16,6 @@ Competitive advantages:
 * 1. leboX is the first exchange for SLB worldwide.
 * 2. Competitive prices / fees
 * 3. Private trader (average person) is more encourage to trade securities
+
+# How to run
+Just open index.html
