@@ -1,0 +1,8 @@
+{
+  "name": "hubuntu-ui",
+  "private": "true",
+  "dependencies": {
+    "Materialize": "materialize#~0.97.1",
+    "chartist": "~0.9.4"
+  }
+}

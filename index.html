@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <title>Hubuntu - material admin dashboard Ubuntu like starter template</title>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu:400,700italic,700,500italic,500,400italic,300,300italic' rel='stylesheet' type='text/css'>
+  <link href="bower_components/Materialize/dist/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection">
+  <link href="bower_components/chartist/dist/chartist.min.css" type="text/css" rel="stylesheet" media="screen,projection">
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+   <style>
+
+     .stock-icon {
+       float: left;
+       margin: 2px;
+       width: 32px;
+       height: 32px;
+     }
+
+     .selected-stock {
+     background-color: #26a69a !important;
+     }
+
+      .invisible { opacity: 0;
+        display: none;
+        animation: display-none-transition 1s;
+        -webkit-animation: display-none-transition 1s;
+      }
+
+     .visible{
+        opacity: 1;
+         animation: display-none-transition 1s;
+         -webkit-animation: display-none-transition 1s;
+         display: block;
+      }
+
+     @-webkit-keyframes display-none-transition {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+     .ok-button {
+       float: right;
+     }
+
+    </style>
+
+</head>
+<body>
+
+  <div class="loading pink darken-4">
+    <img src="img/logo.png" width="160" class="hide"/>
+    <br>
+    <div class="preloader-wrapper big active">
+      <div class="spinner-layer spinner-red">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div>
+        <div class="gap-patch">
+          <div class="circle"></div>
+        </div>
+        <div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page hide">
+  <header>
+    <nav class="pink darken-4">
+      <div class="nav-wrapper">
+        <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only">
+          <i class="mdi-navigation-menu"></i>
+        </a>
+        <span href="#" class="brand-logo page-title">
+          <img src="img/logo.png" width="160"/>
+        </span>
+        <ul class="right hide-on-med-and-down">
+          <li>
+            <a href="#">
+              <span class="nav-badge">3</span>
+              <i class="material-icons">chat_bubble</i>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="material-icons">settings</i>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="tooltipped" data-position="left" data-delay="50" data-tooltip="Logout">
+              <i class="material-icons">exit_to_app</i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <ul id="nav-mobile" class="side-nav custom-side-nav fixed">
+      <li class="grey darken-4">
+        <div class="user">
+          <div class="chip grey darken-3 white-text">
+            <img src="http://blogs-images.forbes.com/jasonevangelho/files/2013/03/Linus-Torvalds.jpg" alt="Contact Person">
+            Jeremy Lean
+          </div>
+        </div>
+      </li>
+      <li>
+        <a class="grey white-text darken-3 waves-effect waves-grey">
+          <i class="material-icons deep-orange-text">airplay</i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">perm_identity</i>
+          <span class="badge deep-orange darken-1 white-text">33</span> Users
+        </a>
+      </li>
+
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">clear_all</i>
+          Reports
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">trending_up</i>
+          Analytics
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">layers</i>
+          Servers
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">storage</i>
+          Database
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">public</i>
+          Domains
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">cloud_queue</i>
+          Network
+        </a>
+      </li>
+
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">notifications_none</i>
+          Alerts
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect waves-grey">
+          <i class="material-icons">message</i>
+          Messages
+        </a>
+      </li>
+    </ul>
+  </header>
+  <main>
+    <div class="breadcrumb grey lighten-3">
+      <h6>
+        Dashboard
+      </h6>
+    </div>
+    <div class="card card-header">
+      <div class="card-content" style="padding-bottom: 10px">
+        <span class="card-title black-text">
+          Current portfolio
+        </span>
+
+          <div id="app"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+  <script src="bower_components/chartist/dist/chartist.min.js"></script>
+  <script type="text/javascript" src="bower_components/Materialize/dist/js/materialize.min.js"></script>
+  <script src="app.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  (function () {
+
+
+    //buttons
+    $(".button-collapse").sideNav();
+    //loader and loading
+    $('.loading img').fadeIn(600).removeClass('hide');
+    //boot
+    var bootTimeout = window.setTimeout(function setBootTimeout() {
+      //chart
+      new Chartist.Line('.ct-chart', {
+        labels:[1,2,3,4],
+        series: [
+          [10, 9, 16, 1, 6, 10, 5, 10],
+          [13, 2, 10, 6, 17, 2, 11, 4],
+          [2, 15, 13, 1, 1, 5, 18, 10]
+        ]
+      }, {
+        high:18,
+        height:220,
+        low:0,
+        showArea: true,
+        showLine: false,
+        showPoint: false,
+        axisX: {
+          showLabel: false,
+          showGrid: false
+        }
+      });
+      $('.page').removeClass('hide');
+      $('.loading').fadeOut(1000);
+      window.clearTimeout(bootTimeout);
+    }, 2000)
+    , secondToastTimeout = window.setTimeout(function setSecondToastTimeout() {
+      //Some toast
+      Materialize.toast('Hubuntu UI is available on &nbsp;<a class="deep-orange-text text-lighten-1" href="https://github.com/720kb/hubuntu-ui" target="_blank">Github</a>', 60000);
+      window.clearTimeout(secondToastTimeout);
+    }, 5000);
+  })();
+  </script>
+</body>
+</html>
