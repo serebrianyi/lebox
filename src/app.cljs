@@ -46,11 +46,11 @@
 
 (defn portfolio-entry [data owner]
   (reify
-    ;om/IWillMount
-    ;  (will-mount [_]
-    ;    (let [{:keys [stock is-selected]} data]
-    ;      (go (let [quote (<!(get-quote (:symbol stock)))]
-    ;        (swap! app-state update-in [:stocks (get-stock-index-by-symbol (:symbol stock))] assoc :quote quote)))))
+    om/IWillMount
+      (will-mount [_]
+        (let [{:keys [stock is-selected]} data]
+          (go (let [quote (<!(get-quote (:symbol stock)))]
+            (swap! app-state update-in [:stocks (get-stock-index-by-symbol (:symbol stock))] assoc :quote quote)))))
     om/IRenderState
       (render-state [this state]
         (let [{:keys [stock is-selected]} data]

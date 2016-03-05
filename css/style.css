@@ -1,3 +1,41 @@
+.stock-icon {
+  float: left;
+  margin: 2px;
+  width: 32px;
+  height: 32px;
+}
+
+.selected-stock {
+  background-color: #26a69a !important;
+}
+
+.invisible { opacity: 0;
+  display: none;
+  animation: display-none-transition 1s;
+  -webkit-animation: display-none-transition 1s;
+}
+
+.visible{
+  opacity: 1;
+  animation: display-none-transition 1s;
+  -webkit-animation: display-none-transition 1s;
+  display: block;
+}
+
+@-webkit-keyframes display-none-transition {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.ok-button {
+  float: right;
+}
+
+
 html {
   font-family: 'Ubuntu', sans-serif; }
 
