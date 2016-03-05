@@ -8,6 +8,7 @@
 
 (enable-console-print!)
 
+; JQuery helpers
 (def jquery (js* "$"))
 
 (defn openProposalDialog []
@@ -15,7 +16,17 @@
      (fn []
        (-> (println (. (jquery ".modal") openModal))))))
 
+; Clojure helpers
+(defn indices-of [f coll]
+  (keep-indexed #(if (f %2) %1 nil) coll))
 
+(defn first-index-of [f coll]
+  (first (indices-of f coll)))
+
+; State of the app
+(defonce app-state (atom {:stocks [{:symbol "MSFT" :quantity 112} {:symbol "AAPL" :quantity 73} {:symbol "GOOG" :quantity 31} ]}))
+
+; Yahoo Finance integration
 (defn quote-url [stock-symbol]
   (str "https://query.yahooapis.com/v1/public/yql?q=select%20LastTradePriceOnly%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22" stock-symbol "%22)&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback="))
 
@@ -24,14 +35,36 @@
     (let [response (<! (http/get (quote-url stocks-symbol) {:with-credentials? false}))]
       (:LastTradePriceOnly (:quote (:results (:query (:body response))))))))
 
-(defonce app-state (atom {:stocks [{:symbol "MSFT" :quantity 50} {:symbol "AAPL" :quantity 50} {:symbol "GOOG" :quantity 50} ]}))
+; Biz
+(defn get-lending-days [duration]
+  (case duration
+    :less-than-a-month (rand-int 30)
+    :one-to-six-months (+ 30 (rand-int (* 5 30)))
+    :up-to-an-year (+ (* 6 30) (rand-int (* 6 30)))
+    :sky-is-the-limit (+ (* 12 30) (rand-int 10000000))
+    0))
 
-(defn indices-of [f coll]
-  (keep-indexed #(if (f %2) %1 nil) coll))
+(defn get-interest-rate [duration]
+  (case duration
+    :less-than-a-month 0.5
+    :one-to-six-months 0.7
+    :up-to-an-year 1
+    :sky-is-the-limit 1.5
+    0))
 
-(defn first-index-of [f coll]
-  (first (indices-of f coll)))
+(defn get-return-date [lending-days]
+  (let [now (js/Date.)
+        return-date (js/Date. (.setDate now (+ (.getDate now) lending-days)))]
+    (.toLocaleDateString return-date "de-CH")))
 
+(defn create-business-proposal [duration]
+  (let [lending-days (get-lending-days duration)
+        interest-rate (get-interest-rate duration)]
+    {:return-date (get-return-date lending-days)
+     :effective-interest-rate (/ (* interest-rate lending-days) 36000)
+     :annualized-interest-rate interest-rate}))
+
+; Om components + helpers
 (defn get-stock-index-by-symbol [stock-symbol]
   (first-index-of #(= stock-symbol (:symbol %)) (:stocks @app-state)))
 
@@ -65,45 +98,18 @@
                   )))))))
 
 
-(defn get-lending-days [duration]
-  (case duration
-    :less-than-a-month (rand-int 30)
-    :one-to-six-months (+ 30 (rand-int (* 5 30)))
-    :up-to-an-year (+ (* 6 30) (rand-int (* 6 30)))
-    :sky-is-the-limit (+ (* 12 30) (rand-int 10000000))
-    0))
-
-(defn get-interest-rate [duration]
-  (case duration
-    :less-than-a-month 0.5
-    :one-to-six-months 0.7
-    :up-to-an-year 1
-    :sky-is-the-limit 1.5
-    0))
-
-(defn get-return-date [lending-days]
-  (let [now (js/Date.)
-        return-date (js/Date. (.setDate now (+ (.getDate now) lending-days)))]
-    (.toLocaleDateString return-date "de-CH")))
-
-(defn create-business-proposal [duration]
-  (let [lending-days (get-lending-days duration)
-        interest-rate (get-interest-rate duration)]
-    {:return-date (get-return-date lending-days)
-     :effective-interest-rate (/ (* interest-rate lending-days) 36000)
-     :annualized-interest-rate interest-rate}))
 
 (defn lend-a-stock! [stock-symbol]
   (.toast js/Materialize (str "Transaction successfully commited") 6000)
   (swap! app-state update-in [:stocks (get-stock-index-by-symbol stock-symbol)] assoc :is-lent true)
   (swap! app-state update-in [:order] {}))
 
-(defn proposal-dialog [app owner]
+(defn proposal-dialog [data owner]
   (reify
     om/IRenderState
       (render-state [this state]
-        (let [{:keys [order]} app
-              stock (first (filter #(= (:symbol %) (:stock order)) (:stocks app)))
+        (let [{:keys [order]} data
+              stock (first (filter #(= (:symbol %) (:stock order)) (:stocks data)))
               capital-involved (* (:quantity stock) (:quote stock))
               {:keys [return-date effective-interest-rate annualized-interest-rate]} (create-business-proposal (:duration order))
               capital-gain (* capital-involved effective-interest-rate)]
@@ -120,29 +126,29 @@
 
 (defn get-portfolio-entry-data [stock is-selected] {:stock stock :is-selected is-selected})
 
-(defn root-component [app owner]
+(defn root-component [data owner]
   (reify
     om/IRender
     (render [_]
       (dom/div nil
-        (om/build proposal-dialog app)
+        (om/build proposal-dialog data)
         (dom/div #js {:className "row"}
-          (om/build-all portfolio-entry (map #(get-portfolio-entry-data % (= (:stock (:order app)) (:symbol %))) (filter #(not (:is-lent %)) (:stocks app)))))
-        (dom/form  #js {:action "#" :className (if (:stock (:order app)) "visible" "invisible")}
+          (om/build-all portfolio-entry (map #(get-portfolio-entry-data % (= (:stock (:order data)) (:symbol %))) (filter #(not (:is-lent %)) (:stocks data)))))
+        (dom/form  #js {:action "#" :className (if (:stock (:order data)) "visible" "invisible")}
           (dom/p nil
-            (dom/input #js {:name "duration" :type "radio" :id "less-than-a-month" :checked (= (:duration (:order app)) :less-than-a-month)})
+            (dom/input #js {:name "duration" :type "radio" :id "less-than-a-month" :checked (= (:duration (:order data)) :less-than-a-month)})
             (dom/label #js {:htmlFor "less-than-a-month" :onClick #(select-a-duration! :less-than-a-month)}  "Less than a month"))
           (dom/p nil
-            (dom/input #js {:name "duration" :type "radio" :id "one-to-six-months" :checked (= (:duration (:order app)) :one-to-six-months)})
+            (dom/input #js {:name "duration" :type "radio" :id "one-to-six-months" :checked (= (:duration (:order data)) :one-to-six-months)})
             (dom/label #js {:htmlFor "one-to-six-months" :onClick #(select-a-duration! :one-to-six-months)}  "One to six months"))
           (dom/p nil
-            (dom/input #js {:name "duration" :type "radio" :id "up-to-an-year" :checked (= (:duration (:order app)) :up-to-an-year)})
+            (dom/input #js {:name "duration" :type "radio" :id "up-to-an-year" :checked (= (:duration (:order data)) :up-to-an-year)})
             (dom/label #js {:htmlFor "up-to-an-year" :onClick #(select-a-duration! :up-to-an-year)}  "Up to an year"))
           (dom/p nil
-            (dom/input #js {:name "duration" :type "radio" :id "sky-is-the-limit" :checked (= (:duration (:order app)) :sky-is-the-limit)})
+            (dom/input #js {:name "duration" :type "radio" :id "sky-is-the-limit" :checked (= (:duration (:order data)) :sky-is-the-limit)})
             (dom/label #js {:htmlFor "sky-is-the-limit" :onClick #(select-a-duration! :sky-is-the-limit)}  "Sky is the limit")))
          (dom/div #js {:className "row"} (dom/button #js
-                                                     {:className (if (:duration (:order app)) "btn ok-button visible" "btn ok-button invisible")
+                                                     {:className (if (:duration (:order data)) "btn ok-button visible" "btn ok-button invisible")
                                                       :onClick #(openProposalDialog)} "OK"))
         ))))
 
