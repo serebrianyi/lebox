@@ -5,6 +5,10 @@
   height: 32px;
 }
 
+.proposal {
+  background-color: #26a69a;
+}
+
 .selected-stock {
   background-color: #26a69a !important;
 }
@@ -193,7 +197,7 @@ header, main, footer {
   z-index: 99999;
   text-align: center; }
   .loading img {
-    margin-top: 16%; }
+    margin-top: 5%; }
 
 .toast {
   background: rgba(0, 0, 0, 0.79); }

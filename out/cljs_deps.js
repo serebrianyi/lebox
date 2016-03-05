@@ -36,4 +36,4 @@ goog.addDependency("../figwheel/client/socket.js", ['figwheel.client.socket'], [
 goog.addDependency("../figwheel/client/heads_up.js", ['figwheel.client.heads_up'], ['goog.string', 'cljs.core', 'cljs.core.async', 'figwheel.client.socket', 'clojure.string']);
 goog.addDependency("../figwheel/client.js", ['figwheel.client'], ['goog.userAgent.product', 'goog.Uri', 'cljs.core', 'cljs.core.async', 'figwheel.client.file_reloading', 'figwheel.client.utils', 'cljs.repl', 'figwheel.client.heads_up', 'figwheel.client.socket', 'clojure.string']);
 goog.addDependency("../om/core.js", ['om.core'], ['goog.dom', 'cljs.core', 'om.dom', 'goog.dom.dataset', 'goog.object', 'cljsjs.react', 'goog.ui.IdGenerator']);
-goog.addDependency("../test/core.js", ['test.core'], ['cljs.core', 'cljs_http.client', 'om.dom', 'cljs.core.async', 'figwheel.client', 'om.core']);
+goog.addDependency("../leboX/core.js", ['leboX.core'], ['cljs.core', 'cljs_http.client', 'om.dom', 'cljs.core.async', 'figwheel.client', 'om.core']);

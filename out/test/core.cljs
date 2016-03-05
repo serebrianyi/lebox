@@ -93,6 +93,11 @@
      :effective-interest-rate (/ (* interest-rate lending-days) 36000)
      :annualized-interest-rate interest-rate}))
 
+(defn lend-a-stock! [stock-symbol]
+  (.toast js/Materialize (str "Transaction successfully commited") 6000)
+  (swap! app-state update-in [:stocks (get-stock-index-by-symbol stock-symbol)] assoc :is-lent true)
+  (swap! app-state update-in [:order] {}))
+
 (defn proposal-dialog [app owner]
   (reify
     om/IRenderState
@@ -103,11 +108,14 @@
               {:keys [return-date effective-interest-rate annualized-interest-rate]} (create-business-proposal (:duration order))
               capital-gain (* capital-involved effective-interest-rate)]
           (dom/div #js {:className "modal"}
-            (dom/div #js {:className "modal-content"}
+            (dom/div #js {:className "modal-content proposal"}
               (dom/h4 nil (str "Proposal for " (:stock order)))
-              (dom/p nil (str "You will gain " (.toFixed capital-gain 2) " until " return-date " (" (.toFixed annualized-interest-rate 2) "% p.a)")))
+              (dom/p nil (str "Capital gain: " (.toFixed capital-gain 2)))
+              (dom/p nil (str "Return data: " return-date))
+              (dom/p nil (str "Interest rate: " (.toFixed annualized-interest-rate 2) "% p.a)")))
             (dom/div #js {:className "modal-footer"}
-              (dom/a #js {:href "#!" :className "modal-action modal-close waves-effect waves-green btn-flat"} "Agree")
+              (dom/a #js {:href "#!" :className "modal-action modal-close waves-effect waves-green btn-flat"
+                          :onClick #(lend-a-stock! (:stock order))} "Agree")
               (dom/a #js {:href "#!" :className "modal-action modal-close waves-effect waves-green btn-flat"} "Disagree")))))))
 
 (defn get-portfolio-entry-data [stock is-selected] {:stock stock :is-selected is-selected})

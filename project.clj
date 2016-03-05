@@ -1,5 +1,5 @@
-(defproject todomvc "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
+(defproject leboX "0.1.0-SNAPSHOT"
+  :description "Lending and borrowing of securites fake"
   :url "http://example.com/FIXME"
 
   :jvm-opts ^:replace ["-Xms4g" "-Xmx4g" "-server"]
@@ -21,7 +21,7 @@
     :builds [{:id "dev"
               :source-paths ["src"]
               :compiler {
-                :main test.core
+                :main leboX.core
                 :output-to "app.js"
                 :output-dir "out"
                 :optimizations :none
