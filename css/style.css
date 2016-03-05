@@ -1,8 +1,17 @@
+
 .stock-icon {
   float: left;
   margin: 2px;
   width: 32px;
   height: 32px;
+}
+
+.stock-icon-small-holder {
+  line-height: 30px !important;
+}
+
+.stock-reveal {
+  padding: 10px !important;
 }
 
 .proposal {
